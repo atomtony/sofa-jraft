@@ -419,6 +419,7 @@
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -459,6 +460,7 @@
                     </mapping>
                 </configuration>
             </plugin>
+-->
         </plugins>
     </build>
 

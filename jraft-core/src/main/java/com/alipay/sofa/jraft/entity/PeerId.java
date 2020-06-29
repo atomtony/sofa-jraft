@@ -36,6 +36,7 @@ import com.alipay.sofa.jraft.util.Utils;
  *
  * 2018-Mar-12 3:27:37 PM
  */
+// 节点ID
 public class PeerId implements Copiable<PeerId>, Serializable, Checksum {
 
     private static final long   serialVersionUID = 8083529734784884641L;

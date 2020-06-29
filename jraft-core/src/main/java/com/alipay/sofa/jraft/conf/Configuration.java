@@ -38,6 +38,7 @@ import com.alipay.sofa.jraft.util.Requires;
  *
  * 2018-Mar-15 11:00:26 AM
  */
+// 一组节点配置
 public class Configuration implements Iterable<PeerId>, Copiable<Configuration> {
 
     private static final Logger   LOG             = LoggerFactory.getLogger(Configuration.class);
