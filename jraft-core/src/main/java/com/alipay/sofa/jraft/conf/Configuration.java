@@ -38,16 +38,19 @@ import com.alipay.sofa.jraft.util.Requires;
  *
  * 2018-Mar-15 11:00:26 AM
  */
-// 一组节点配置
+// 几区节点配置，包含了集群节点配置和学习者信息
 public class Configuration implements Iterable<PeerId>, Copiable<Configuration> {
 
     private static final Logger   LOG             = LoggerFactory.getLogger(Configuration.class);
 
+    // 学习者前缀
     private static final String   LEARNER_POSTFIX = "/learner";
 
+    // 节点列表
     private List<PeerId>          peers           = new ArrayList<>();
 
     // use LinkedHashSet to keep insertion order.
+    // 学习者列表
     private LinkedHashSet<PeerId> learners        = new LinkedHashSet<>();
 
     public Configuration() {
@@ -287,21 +290,27 @@ public class Configuration implements Iterable<PeerId>, Copiable<Configuration> 
         if (StringUtils.isBlank(conf)) {
             return false;
         }
+        // 重置节点
         reset();
         final String[] peerStrs = StringUtils.split(conf, ',');
         for (String peerStr : peerStrs) {
+            // 创建节点
             final PeerId peer = new PeerId();
             int index;
             boolean isLearner = false;
+            // 判断是否为学习者
             if ((index = peerStr.indexOf(LEARNER_POSTFIX)) > 0) {
                 // It's a learner
                 peerStr = peerStr.substring(0, index);
                 isLearner = true;
             }
+            // 解析节点
             if (peer.parse(peerStr)) {
                 if (isLearner) {
+                    // 添加到学习者集合
                     addLearner(peer);
                 } else {
+                    // 添加到跟随者
                     addPeer(peer);
                 }
             } else {

@@ -6,47 +6,55 @@ import "rpc.proto";
 option java_package="com.alipay.sofa.jraft.rpc";
 option java_outer_classname = "CliRequests";
 
+// 添加节点请求
 message AddPeerRequest {
     required string group_id = 1;
     required string leader_id = 2;
     required string peer_id = 3;
 }
 
+// 添加节点响应
 message AddPeerResponse {
-    repeated string old_peers = 1;
-    repeated string new_peers = 2;
+    repeated string old_peers = 1; // 旧节点
+    repeated string new_peers = 2; // 新节点
     optional ErrorResponse errorResponse = 99;
 }
 
+// 移除节点请求
 message RemovePeerRequest {
     required string group_id = 1;
-    required string leader_id = 2;
+    required string leader_id = 2; // 领导者ID
     required string peer_id = 3;
 }
 
+// 移除节点响应
 message RemovePeerResponse {
     repeated string old_peers = 1;
     repeated string new_peers = 2;
     optional ErrorResponse errorResponse = 99;
 }
 
+// 多节点变更请求
 message ChangePeersRequest {
     required string group_id = 1;
     required string leader_id = 2;
     repeated string new_peers = 3;
 }
 
+// 多节点变更响应
 message ChangePeersResponse {
     repeated string old_peers = 1;
     repeated string new_peers = 2;
     optional ErrorResponse errorResponse = 99;
 }
 
+// 快照请求
 message SnapshotRequest {
     required string group_id = 1;
     optional string peer_id = 2;
 };
 
+// 重置多节点请求
 message ResetPeerRequest {
     required string group_id = 1;
     required string peer_id = 2;
@@ -54,52 +62,61 @@ message ResetPeerRequest {
     repeated string new_peers = 4;
 }
 
+// 传输领导者请求
 message TransferLeaderRequest {
     required string group_id = 1;
     required string leader_id = 2;
     optional string peer_id = 3;
 }
 
+// 获取领导者请求
 message GetLeaderRequest {
     required string group_id = 1;
     optional string peer_id = 2;
 }
 
+// 获取领导者响应
 message GetLeaderResponse {
     required string leader_id = 1;
     optional ErrorResponse errorResponse = 99;
 }
 
+// 获取多节点请求
 message GetPeersRequest {
     required string group_id = 1;
     optional string leader_id = 2;
     optional bool only_alive = 3 [default = false];
 }
 
+// 获取多节点响应
 message GetPeersResponse {
     repeated string peers = 1;
     repeated string learners = 2;
     optional ErrorResponse errorResponse = 99;
 }
 
+// 添加多学习这请求
 message AddLearnersRequest {
     required string group_id = 1;
     required string leader_id = 2;
     repeated string learners = 3;
 }
 
+// 移除多学者请求
 message RemoveLearnersRequest {
     required string group_id = 1;
     required string leader_id = 2;
     repeated string learners = 3;
 }
 
+// 重置多学习者
 message ResetLearnersRequest {
     required string group_id = 1;
     required string leader_id = 2;
     repeated string learners = 3;
 }
 
+// 多领导者操作响应
 message LearnersOpResponse {
     repeated string old_learners = 1;
     repeated string new_learners = 2;

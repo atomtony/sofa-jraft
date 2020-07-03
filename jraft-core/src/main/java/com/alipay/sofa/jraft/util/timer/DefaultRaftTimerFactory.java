@@ -43,26 +43,31 @@ public class DefaultRaftTimerFactory implements RaftTimerFactory {
     private static final String             GLOBAL_SNAPSHOT_TIMER_WORKERS  = "jraft.timer.global_snapshot_timer_workers";
     private static final String             GLOBAL_SCHEDULER_WORKERS       = "jraft.timer.global_scheduler_workers";
 
+    // 选举定时器引用
     private static final TimerSharedRef     ELECTION_TIMER_REF             = new TimerSharedRef(
                                                                                SystemPropertyUtil.getInt(
                                                                                    GLOBAL_ELECTION_TIMER_WORKERS,
                                                                                    Utils.cpus()),
                                                                                "JRaft-Global-ElectionTimer");
+    // 投票定时器引用
     private static final TimerSharedRef     VOTE_TIMER_REF                 = new TimerSharedRef(
                                                                                SystemPropertyUtil.getInt(
                                                                                    GLOBAL_VOTE_TIMER_WORKERS,
                                                                                    Utils.cpus()),
                                                                                "JRaft-Global-VoteTimer");
+    // 降级定时器引用
     private static final TimerSharedRef     STEP_DOWN_TIMER_REF            = new TimerSharedRef(
                                                                                SystemPropertyUtil.getInt(
                                                                                    GLOBAL_STEP_DOWN_TIMER_WORKERS,
                                                                                    Utils.cpus()),
                                                                                "JRaft-Global-StepDownTimer");
+    // 快照定时器引用
     private static final TimerSharedRef     SNAPSHOT_TIMER_REF             = new TimerSharedRef(
                                                                                SystemPropertyUtil.getInt(
                                                                                    GLOBAL_SNAPSHOT_TIMER_WORKERS,
                                                                                    Utils.cpus()),
                                                                                "JRaft-Global-SnapshotTimer");
+    // 调度器引用
     private static final SchedulerSharedRef SCHEDULER_REF                  = new SchedulerSharedRef(
                                                                                SystemPropertyUtil.getInt(
                                                                                    GLOBAL_SCHEDULER_WORKERS,
@@ -106,15 +111,17 @@ public class DefaultRaftTimerFactory implements RaftTimerFactory {
     }
 
     private static abstract class Shared<T> {
-
+        // 引用次数
         private AtomicInteger refCount = new AtomicInteger(0);
+        // 启动标记
         private AtomicBoolean started  = new AtomicBoolean(true);
+        // 引用的实例
         protected final T     shared;
 
         protected Shared(T shared) {
             this.shared = shared;
         }
-
+        // 获取引用实例
         public T getRef() {
             if (this.started.get()) {
                 this.refCount.incrementAndGet();
@@ -122,22 +129,25 @@ public class DefaultRaftTimerFactory implements RaftTimerFactory {
             }
             throw new IllegalStateException("Shared shutdown");
         }
-
+        // 是否关闭
         public boolean isShutdown() {
             return !this.started.get();
         }
 
         public abstract T current();
 
+        // 引用递减，当引用个数为0是，修改启动状态为false
         public boolean mayShutdown() {
             return this.refCount.decrementAndGet() <= 0 && this.started.compareAndSet(true, false);
         }
     }
 
     private static abstract class SharedRef<T> {
-
+        // 线程池核心线程数
         private final int    workerNum;
+        // 线程池线程名字
         private final String name;
+        // 线程池引用对象
         private Shared<T>    shared;
 
         public SharedRef(int workerNum, String name) {
@@ -155,6 +165,7 @@ public class DefaultRaftTimerFactory implements RaftTimerFactory {
         public abstract Shared<T> create(final int workerNum, final String name);
     }
 
+    // 共享定时器引用，封装了共享定时器
     private static class TimerSharedRef extends SharedRef<Timer> {
 
         public TimerSharedRef(int workerNum, String name) {
@@ -163,10 +174,12 @@ public class DefaultRaftTimerFactory implements RaftTimerFactory {
 
         @Override
         public Shared<Timer> create(final int workerNum, final String name) {
+            // 创建共享定时器
             return new SharedTimer(new DefaultTimer(workerNum, name));
         }
     }
 
+    // 共享定时器
     private static class SharedTimer extends Shared<Timer> implements Timer {
 
         protected SharedTimer(Timer shared) {
@@ -185,6 +198,7 @@ public class DefaultRaftTimerFactory implements RaftTimerFactory {
 
         @Override
         public Set<Timeout> stop() {
+            // 当引用个数为0是终止，不然返回空集合
             if (mayShutdown()) {
                 return this.shared.stop();
             }

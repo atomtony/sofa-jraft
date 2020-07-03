@@ -507,16 +507,23 @@ public class NodeImpl implements Node, RaftServerService {
 
     public NodeImpl(final String groupId, final PeerId serverId) {
         super();
+        // 检查组ID合法性
         if (groupId != null) {
             Utils.verifyGroupId(groupId);
         }
         this.groupId = groupId;
         this.serverId = serverId != null ? serverId.copy() : null;
+        // 未初始化状态
         this.state = State.STATE_UNINITIALIZED;
+        // 当前任期编号0
         this.currTerm = 0;
+        // 更新最新的领导者时间戳
         updateLastLeaderTimestamp(Utils.monotonicMs());
+        // 配置上下文
         this.confCtx = new ConfigurationCtx(this);
+        // 唤醒候选人
         this.wakingCandidate = null;
+        // 自增编号
         final int num = GLOBAL_NUM_NODES.incrementAndGet();
         LOG.info("The number of active nodes increment to {}.", num);
     }
@@ -876,6 +883,7 @@ public class NodeImpl implements Node, RaftServerService {
         // Init timers
         final String suffix = getNodeId().toString();
         String name = "JRaft-VoteTimer-" + suffix;
+        // 投票定时器
         this.voteTimer = new RepeatedTimer(name, this.options.getElectionTimeoutMs(), TIMER_FACTORY.getVoteTimer(
             this.options.isSharedVoteTimer(), name)) {
 
@@ -889,6 +897,7 @@ public class NodeImpl implements Node, RaftServerService {
                 return randomTimeout(timeoutMs);
             }
         };
+        // 选举定时器
         name = "JRaft-ElectionTimer-" + suffix;
         this.electionTimer = new RepeatedTimer(name, this.options.getElectionTimeoutMs(),
             TIMER_FACTORY.getElectionTimer(this.options.isSharedElectionTimer(), name)) {
@@ -903,6 +912,7 @@ public class NodeImpl implements Node, RaftServerService {
                 return randomTimeout(timeoutMs);
             }
         };
+        // 降级定时器
         name = "JRaft-StepDownTimer-" + suffix;
         this.stepDownTimer = new RepeatedTimer(name, this.options.getElectionTimeoutMs() >> 1,
             TIMER_FACTORY.getStepDownTimer(this.options.isSharedStepDownTimer(), name)) {
@@ -912,6 +922,7 @@ public class NodeImpl implements Node, RaftServerService {
                 handleStepDownTimeout();
             }
         };
+        // 快照定时器
         name = "JRaft-SnapshotTimer-" + suffix;
         this.snapshotTimer = new RepeatedTimer(name, this.options.getSnapshotIntervalSecs() * 1000,
             TIMER_FACTORY.getSnapshotTimer(this.options.isSharedSnapshotTimer(), name)) {

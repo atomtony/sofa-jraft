@@ -116,6 +116,7 @@ public class RaftGroupService {
         if (this.started) {
             return this.node;
         }
+        // SERVERID必须合法
         if (this.serverId == null || this.serverId.getEndpoint() == null
             || this.serverId.getEndpoint().equals(new Endpoint(Utils.IP_ANY, 0))) {
             throw new IllegalArgumentException("Blank serverId:" + this.serverId);

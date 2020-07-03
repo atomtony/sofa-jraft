@@ -44,6 +44,7 @@ public class NodeManager {
 
     private final ConcurrentMap<NodeId, Node>       nodeMap  = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, List<Node>> groupMap = new ConcurrentHashMap<>();
+    // 存放RPC地址
     private final ConcurrentHashSet<Endpoint>       addrSet  = new ConcurrentHashSet<>();
 
     public static NodeManager getInstance() {

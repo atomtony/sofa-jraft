@@ -30,11 +30,13 @@ import com.alipay.sofa.jraft.util.ThreadPoolUtil;
 /**
  * @author jiachun.fjc
  */
+// 线程池定时器
 public class DefaultTimer implements Timer {
 
     private final ScheduledExecutorService scheduledExecutorService;
 
     public DefaultTimer(int workerNum, String name) {
+        // 创建调度线程池
         this.scheduledExecutorService = ThreadPoolUtil.newScheduledBuilder() //
             .coreThreads(workerNum) //
             .poolName(name) //
@@ -48,14 +50,19 @@ public class DefaultTimer implements Timer {
         Requires.requireNonNull(task, "task");
         Requires.requireNonNull(unit, "unit");
 
+        // 封装定时为超时任务
         final TimeoutTask timeoutTask = new TimeoutTask(task);
+        // 启动调度任务
         final ScheduledFuture<?> future = this.scheduledExecutorService.schedule(new TimeoutTask(task), delay, unit);
+        // 设置Future
         timeoutTask.setFuture(future);
+        // 返回超时
         return timeoutTask.getTimeout();
     }
 
     @Override
     public Set<Timeout> stop() {
+        // 终止调度线程池，等待最大1000毫秒
         ExecutorServiceHelper.shutdownAndAwaitTermination(this.scheduledExecutorService);
         return Collections.emptySet();
     }

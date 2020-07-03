@@ -44,6 +44,7 @@ public class PeerId implements Copiable<PeerId>, Serializable, Checksum {
     private static final Logger LOG              = LoggerFactory.getLogger(PeerId.class);
 
     /** Peer address. */
+    // IP:PORT
     private Endpoint            endpoint         = new Endpoint(Utils.IP_ANY, 0);
     /** Index in same addr, default is 0. */
     private int                 idx;
@@ -197,19 +198,24 @@ public class PeerId implements Copiable<PeerId>, Serializable, Checksum {
             return false;
         }
 
+        // 以冒号分割
         final String[] tmps = StringUtils.splitPreserveAllTokens(s, ':');
         if (tmps.length < 2 || tmps.length > 4) {
             return false;
         }
         try {
+            // 解析端口
             final int port = Integer.parseInt(tmps[1]);
+            // 创建端点
             this.endpoint = new Endpoint(tmps[0], port);
 
             switch (tmps.length) {
                 case 3:
+                    // 3个元素， IP:PORT:IDX
                     this.idx = Integer.parseInt(tmps[2]);
                     break;
                 case 4:
+                    // 4个元素: IP:PORT:IDX:PRIORITY
                     if (tmps[2].equals("")) {
                         this.idx = 0;
                     } else {

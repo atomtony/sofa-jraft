@@ -10,26 +10,30 @@ message PingRequest {
   required int64 send_timestamp = 1;
 }
 
+// 错误消息响应
 message ErrorResponse {
-  required int32 errorCode = 1;
-  optional string errorMsg = 2;
+  required int32 errorCode = 1;// 错误码
+  optional string errorMsg = 2;// 错误消息
 }
 
+// 安装快照请求
 message InstallSnapshotRequest {
-  required string group_id = 1;
-  required string server_id = 2;
-  required string peer_id = 3;
-  required int64 term = 4;
-  required SnapshotMeta meta = 5;
+  required string group_id = 1; // 组ID
+  required string server_id = 2; // 服务ID
+  required string peer_id = 3; // 节点ID
+  required int64 term = 4; // 任期编号
+  required SnapshotMeta meta = 5; // 元数据快照
   required string uri = 6;
 };
 
+// 安装快照响应
 message InstallSnapshotResponse {
-  required int64 term = 1;
-  required bool success = 2;
-  optional ErrorResponse errorResponse = 99;
+  required int64 term = 1; // 任期编号
+  required bool success = 2; // 成功标识符
+  optional ErrorResponse errorResponse = 99; // 错误响应消息
 };
 
+// 节点超时请求
 message TimeoutNowRequest {
   required string group_id = 1;
   required string server_id = 2;
@@ -37,34 +41,39 @@ message TimeoutNowRequest {
   required int64 term = 4;
 }
 
+// 节点超时响应
 message TimeoutNowResponse {
   required int64 term = 1;
   required bool success = 2;
   optional ErrorResponse errorResponse = 99;
 }
 
+// 请求选举请求
 message RequestVoteRequest {
   required string group_id = 1;
   required string server_id = 2;
   required string peer_id = 3;
   required int64 term = 4;
-  required int64 last_log_term = 5;
-  required int64 last_log_index = 6;
+  required int64 last_log_term = 5; // 日志项最后任期编号
+  required int64 last_log_index = 6; // 日志项最后索引编号
   required bool pre_vote = 7;
 };
 
+// 请求选举响应
 message RequestVoteResponse {
   required int64 term = 1;
   required bool granted = 2;
   optional ErrorResponse errorResponse = 99;
 };
 
+// 日志复制请求头
 message AppendEntriesRequestHeader {
   required string group_id = 1;
   required string server_id = 2;
   required string peer_id = 3;
 };
 
+// 日志复制请求
 message AppendEntriesRequest {
   required string group_id = 1;
   required string server_id = 2;
@@ -77,6 +86,7 @@ message AppendEntriesRequest {
   optional bytes data = 9;
 };
 
+// 日志项响应
 message AppendEntriesResponse {
   required int64 term = 1;
   required bool success = 2;
@@ -84,6 +94,7 @@ message AppendEntriesResponse {
   optional ErrorResponse errorResponse = 99;
 };
 
+// 获取文件请求
 message GetFileRequest {
   required int64 reader_id = 1;
   required string filename = 2;
@@ -92,6 +103,7 @@ message GetFileRequest {
   optional bool read_partly = 5;
 }
 
+// 获取文件响应
 message GetFileResponse {
   // Data is in attachment
   required bool eof = 1;
@@ -100,6 +112,7 @@ message GetFileResponse {
   optional ErrorResponse errorResponse = 99;
 }
 
+// 读索引请求
 message ReadIndexRequest {
   required string group_id = 1;
   required string server_id = 2;
@@ -107,6 +120,7 @@ message ReadIndexRequest {
   optional string peer_id = 4;
 }
 
+// 读索引响应
 message ReadIndexResponse {
   required int64 index = 1;
   required bool success = 2;
